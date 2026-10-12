@@ -1,0 +1,12 @@
+{
+  "experiment_id": "EXP-2026-001",
+  "description": "Oil Shock vs AAPL-MSFT Lead-Lag Relationship",
+  "strategy_type": "LaggedCrossCorrelation",
+  "ticker_a": "AAPL",
+  "ticker_b": "MSFT",
+  "macro_ticker": "USO",
+  "rolling_window_hours": 120,
+  "step_size": 10,
+  "max_lag_tested": 10,
+  "volatility_threshold": 0.05
+}

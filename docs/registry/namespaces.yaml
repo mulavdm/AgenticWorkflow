@@ -1,0 +1,6 @@
+# Domains of the AgenticWorkflow container's identity scope.
+domains:
+  - id: AGENTIC
+    name: AgenticWorkflow container
+    owner: agentic-workflow
+    status: active

@@ -1,0 +1,46 @@
+# Binaries
+/orchestrator
+/orchestrator.exe
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Logs
+logs/
+project/tool_audit.log
+test_results_*.md
+
+# Database
+*.db
+
+# Runtime configuration
+agents_config.json
+
+# GoCache
+.gocache
+
+# OpenAI Codex config
+.codex
+
+#Shadow Workspace
+.shadow_workspaces/
+
+#Scratch directory
+scratch/
+
+# Environment variables
+.env
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Local runtime logs
+artifactflow.log

@@ -1,0 +1,12 @@
+{
+  "experiment_id": "EXP-SECTOR-001",
+  "description": "Staples (XLP) vs Discretionary (XLY) Sector Lag Analysis",
+  "strategy_type": "LaggedCrossCorrelation",
+  "ticker_a": "XLP",
+  "ticker_b": "XLY",
+  "macro_ticker": "SPY",
+  "rolling_window_hours": 60,
+  "step_size": 5,
+  "max_lag_tested": 10,
+  "volatility_threshold": 0.05
+}

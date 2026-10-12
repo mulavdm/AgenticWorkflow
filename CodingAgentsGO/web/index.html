@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cognitive Orchestration Dashboard - High-performance agentic framework for autonomous engineering.">
+    <meta name="keywords" content="AI Agents, Orchestration, Go, Playwright, Chrome DevTools, Autonomous Engineering">
+    <title>Cognitive Orchestration Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="static/css/styles.css">
+</head>
+<body class="dark-mode">
+    <div class="glass-container">
+        <header role="banner">
+            <div class="header-left">
+                <h1 class="glow-text">Cognitive Orchestration</h1>
+                <nav class="tab-nav" aria-label="Main Navigation">
+                    <button class="tab-btn active" data-tab="orchestrator" aria-current="page">Orchestrator</button>
+                    <button class="tab-btn" data-tab="runs">Workbench</button>
+                    <button class="tab-btn" data-tab="agents">Agent Lab</button>
+                    <button class="tab-btn" data-tab="operations">Operations</button>
+                </nav>
+            </div>
+            <div class="control-panel" role="search">
+                <div class="select-wrapper">
+                    <label for="mode-selector" class="sr-only">Select reasoning provider</label>
+                    <select id="mode-selector">
+                        <option value="llamacpp">llama.cpp</option>
+                        <option value="local">Ollama</option>
+                        <option value="lmstudio">LM Studio</option>
+                        <option value="cloud">Cloud Provider</option>
+                    </select>
+                </div>
+                <div class="select-wrapper">
+                    <label for="model-selector" class="sr-only">Select specific model instance</label>
+                    <select id="model-selector">
+                        <option value="">Auto-Detect Model</option>
+                    </select>
+                </div>
+                <div class="select-wrapper">
+                    <label for="agent-selector" class="sr-only">Target specific specialist</label>
+                    <select id="agent-selector">
+                        <option value="">Full Team</option>
+                        <option value="context">Context Analyst</option>
+                        <option value="planner">Lead Planner</option>
+                        <option value="critic">Safety Critic</option>
+                        <option value="redteamer">Red Teamer</option>
+                        <option value="coder">Lead Coder</option>
+                        <option value="synthesizer">Synthesizer</option>
+                    </select>
+                </div>
+                <div class="toggle-group" style="display: flex; gap: 10px;">
+                    <div class="toggle-container" style="display: flex; align-items: center; gap: 5px; color: var(--text-color);">
+                        <input type="checkbox" id="shadow-toggle" checked>
+                        <label for="shadow-toggle" title="Isolated Workspace Mode">@shadow</label>
+                    </div>
+                    <div class="toggle-container" style="display: flex; align-items: center; gap: 5px; color: var(--text-color);">
+                        <input type="checkbox" id="council-toggle">
+                        <label for="council-toggle" title="Consensus Swarm Mode">@council</label>
+                    </div>
+                </div>
+                <div class="input-wrapper">
+                    <label for="user-input" class="sr-only">Enter task request</label>
+                    <input type="text" id="user-input" placeholder="Enter task request...">
+                </div>
+                <button id="btn-execute" aria-label="Execute Task">Execute</button>
+            </div>
+            <div class="status-badge" id="current-phase" aria-live="polite">Idle</div>
+        </header>
+
+        <main id="tab-orchestrator" class="tab-content active">
+            <aside class="sidebar node-palette">
+                <h3>Agents</h3>
+                <div class="palette-item" draggable="true" data-type="context">Analyst</div>
+                <div class="palette-item" draggable="true" data-type="planner">Planner</div>
+                <div class="palette-item" draggable="true" data-type="critic">Critic</div>
+                <div class="palette-item" draggable="true" data-type="redteamer">Red Team</div>
+                <div class="palette-item" draggable="true" data-type="coder">Coder</div>
+                <div class="palette-item" draggable="true" data-type="synthesizer">Synthesizer</div>
+            </aside>
+
+            <section class="viz-panel" id="node-editor">
+                <svg id="connection-layer"></svg>
+                <div id="nodes-container"></div>
+            </section>
+
+            <div class="right-panels">
+                <section class="transcript-panel">
+                    <h2>Live Transcript</h2>
+                    <div id="transcript-feed" class="scroll-area"></div>
+                </section>
+
+                <aside class="memory-panel">
+                    <h2>Episodic Memory</h2>
+                    <div id="memory-list" class="scroll-area"></div>
+                </aside>
+            </div>
+        </main>
+
+        <main id="tab-runs" class="tab-content">
+            <section class="workbench-grid">
+                <aside class="run-list-panel">
+                    <div class="section-header compact">
+                        <h2>Runs</h2>
+                        <button id="btn-refresh-runs" class="small-btn">Refresh</button>
+                    </div>
+                    <div id="run-list" class="scroll-area"></div>
+                </aside>
+
+                <section class="run-detail-panel">
+                    <div class="section-header compact">
+                        <h2 id="run-detail-title">Run Detail</h2>
+                        <button id="btn-cancel-run" class="small-btn danger" disabled>Cancel</button>
+                    </div>
+                    <nav class="subtab-nav" aria-label="Run detail views">
+                        <button class="subtab-btn active" data-run-tab="timeline">Timeline</button>
+                        <button class="subtab-btn" data-run-tab="messages">Messages</button>
+                        <button class="subtab-btn" data-run-tab="events">Events</button>
+                        <button class="subtab-btn" data-run-tab="artifacts">Artifacts</button>
+                    </nav>
+                    <div id="run-detail-content" class="scroll-area data-view"></div>
+                </section>
+
+                <aside class="approval-panel">
+                    <div class="section-header compact">
+                        <h2>Approvals</h2>
+                    </div>
+                    <div id="approval-list" class="scroll-area"></div>
+                    <div class="provider-probe-panel">
+                        <h2>Provider Probe</h2>
+                        <input id="provider-probe-url" type="text" placeholder="http://127.0.0.1:8081/v1/chat/completions">
+                        <button id="btn-provider-probe" class="small-btn">Probe</button>
+                        <pre id="provider-probe-result"></pre>
+                    </div>
+                </aside>
+            </section>
+        </main>
+        
+        <main id="tab-agents" class="tab-content">
+            <section class="agents-grid-container">
+                <div class="section-header">
+                    <h2>Agent Lab</h2>
+                    <p>Configure specialist prompts and models.</p>
+                </div>
+
+                <section class="global-config-section">
+                    <h3>Global Defaults</h3>
+                    <div class="global-config-grid">
+                        <div class="form-group">
+                            <label>System Mode</label>
+                            <select id="global-mode">
+                                <option value="llamacpp">llama.cpp</option>
+                                <option value="local">Local (Ollama)</option>
+                                <option value="lmstudio">LM Studio</option>
+                                <option value="cloud">Cloud (OpenAI)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Global Ollama Model</label>
+                            <select id="global-ollama-model"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Global LM Studio Model</label>
+                            <select id="global-lmstudio-model"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Global OpenAI-Compatible Model</label>
+                            <select id="global-openai-model"></select>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button id="btn-sync-all" class="reset-btn small">Reset All Specialists</button>
+                        <button id="btn-save-global" class="save-btn small">Commit Global Pulse</button>
+                    </div>
+                </section>
+
+                <div id="agents-grid" class="agents-grid"></div>
+            </section>
+            
+            <section id="agent-editor-panel" class="agent-editor-panel hidden">
+                <div class="editor-window">
+                    <div class="editor-header">
+                        <h2 id="editing-agent-name">Agent Name</h2>
+                        <button id="btn-back-to-grid" class="back-btn">Close</button>
+                    </div>
+                    <div class="editor-body">
+                        <div class="editor-main-layout">
+                            <!-- Left: Core Configuration -->
+                            <div class="editor-config-pane">
+                                <div class="form-group">
+                                    <label>Identity / Display Name</label>
+                                    <input type="text" id="edit-agent-name" placeholder="Agent Name">
+                                </div>
+                                <div class="form-group">
+                                    <label>Target LLM Engine</label>
+                                    <select id="edit-agent-model"></select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Mission Directive (System Prompt Override)</label>
+                                    <textarea id="edit-agent-prompt" rows="8"></textarea>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Reasoning Temp</label>
+                                        <input type="number" id="edit-agent-temp" step="0.1" min="0" max="2">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Token Limit</label>
+                                        <input type="number" id="edit-agent-tokens" step="100">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Bound Capabilities (Tools)</label>
+                                    <div id="edit-agent-tools" class="tool-chip-container"></div>
+                                </div>
+                            </div>
+
+                            <!-- Right: Read-only Constitution -->
+                            <div class="editor-constitution-pane">
+                                <label>Core Identity (Read-Only Constitution)</label>
+                                <div id="edit-agent-constitution" class="constitution-viewer"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button id="btn-reset-agent" class="reset-btn">Reset All Overrides</button>
+                            <button id="btn-save-agent" class="save-btn">Commit Changes</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <main id="tab-operations" class="tab-content">
+            <section class="operations-grid">
+                <section class="ops-panel">
+                    <div class="section-header compact">
+                        <h2>Local Health</h2>
+                        <button id="btn-refresh-ops" class="small-btn">Refresh</button>
+                    </div>
+                    <div id="health-summary" class="ops-summary"></div>
+                    <div id="health-details" class="ops-list"></div>
+                </section>
+
+                <section class="ops-panel">
+                    <div class="section-header compact">
+                        <h2>Indexer</h2>
+                    </div>
+                    <div id="indexer-summary" class="ops-summary"></div>
+                    <div id="indexer-details" class="ops-list"></div>
+                </section>
+
+                <section class="ops-panel">
+                    <div class="section-header compact">
+                        <h2>Capabilities</h2>
+                    </div>
+                    <div id="capabilities-summary" class="ops-summary"></div>
+                    <div id="capabilities-details" class="ops-list"></div>
+                </section>
+
+                <section class="ops-panel">
+                    <div class="section-header compact">
+                        <h2>Tool Policy</h2>
+                    </div>
+                    <div id="policy-summary" class="ops-summary"></div>
+                    <div id="policy-details" class="ops-list"></div>
+                </section>
+
+                <section class="ops-panel ops-raw-panel">
+                    <div class="section-header compact">
+                        <h2>Diagnostics JSON</h2>
+                    </div>
+                    <pre id="ops-raw-json" class="ops-raw"></pre>
+                </section>
+            </section>
+        </main>
+
+        <footer>
+            <div class="token-stats">
+                <span>Tokens: <span id="token-count">0</span></span>
+            </div>
+        </footer>
+    </div>
+    <script src="static/js/nodeEditor.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script type="module" src="static/js/app.js"></script>
+</body>
+</html>

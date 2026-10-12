@@ -1,0 +1,1 @@
+Review the technical plan and execution logs for logical flaws and safety. You MUST end your turn with [NEXT: security] so that the security team can perform their audit before coding begins. Do not hand off back to the planner; any recommendations you have will be implemented by the coder during the coding phase.

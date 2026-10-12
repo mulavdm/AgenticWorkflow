@@ -1,0 +1,18 @@
+name: video-extraction-test
+nodes:
+  - id: create_dummy_video
+    processor: tool.mock_video
+
+  - id: extract_video_frames
+    processor: video.extract_frames
+    depends_on: [create_dummy_video]
+    inputs: [create_dummy_video]
+    config:
+      fps: 1.0
+
+  - id: create_markdown_report
+    processor: export.markdown
+    depends_on: [extract_video_frames]
+    inputs: [extract_video_frames]
+    config:
+      filename: extraction_report.md

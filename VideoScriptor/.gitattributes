@@ -1,0 +1,27 @@
+# Workspace line-ending policy. Canonical template -- copied verbatim into every
+# workspace-managed repository. Do not edit a copy in place; edit this file.
+#
+# Why this exists at all: with core.autocrlf=true (the common Windows default),
+# git rewrites LF blobs to CRLF at checkout for any path with no eol attribute.
+# The repository stays LF while the working tree drifts, and line-ending-sensitive
+# tools -- gofmt, cargo fmt, shell shebangs, byte-exact generated-file checks --
+# then fail on content that is correct in git. `git archive` compounds it by
+# honouring autocrlf too, so even an export can disagree with the repository.
+#
+# Two rules that are easy to get backwards:
+#   * `git add --renormalize .` stages nothing when the blobs are already LF.
+#     The repair for a stale checkout is a re-checkout, not a renormalise.
+#   * Re-checking out a repository that has no eol attribute makes it WORSE,
+#     because autocrlf performs the conversion. This file must be committed
+#     first, then the working tree refreshed.
+#
+# Verify with `git ls-files --eol`, which reports index and working-tree
+# encoding separately. Never infer line endings from `git archive` output.
+
+* text=auto eol=lf
+
+# Windows tooling does not reliably tolerate LF in these formats.
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.sln text eol=crlf

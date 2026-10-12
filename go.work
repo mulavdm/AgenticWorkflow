@@ -1,0 +1,14 @@
+go 1.26.3
+
+use (
+	.
+	./ArtifactFlow
+	./CentralLogger
+	./CodingAgentsGO
+	./VideoScriptor
+)
+
+replace (
+	github.com/ArtifactFlow/ArtifactFlow v0.0.0 => ./ArtifactFlow
+	github.com/user/CentralLogger v0.0.0 => ./CentralLogger
+)

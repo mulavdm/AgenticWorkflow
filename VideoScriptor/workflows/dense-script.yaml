@@ -1,0 +1,31 @@
+name: dense-script
+
+nodes:
+  - id: create_dummy_video
+    processor: tool.mock_video
+
+  - id: clips
+    processor: video.extract_frames
+    depends_on: [create_dummy_video]
+    config:
+      input_video: "mock_movie.mp4"
+      frames_per_clip: 5
+
+  - id: transcript
+    processor: audio.whisper
+    depends_on: [clips]
+    config:
+      model: "whisper_model"
+
+  - id: visuals
+    processor: vision.describe
+    depends_on: [clips]
+    config:
+      model: "vision_model"
+      detail: "dense"
+
+  - id: script
+    processor: text.merge_script
+    depends_on: [transcript, visuals]
+    config:
+      model: "text_model"

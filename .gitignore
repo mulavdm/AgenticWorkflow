@@ -1,0 +1,6 @@
+# Build products and runtime state
+*.exe
+*.dll
+*.db
+*.log
+logs/

@@ -1,0 +1,18 @@
+# AD4 T7: the allocation table for the AgenticWorkflow container scope.
+# The container's formal set is its agent instructions and its roadmap; the
+# notes under docs/ are informal. `accepted` carries forward the date the
+# agent instructions became current (EOM document-lifecycle, amendment of
+# 2026-09-17).
+scope: AgenticWorkflow
+domain: AGENTIC
+owner: agentic-workflow
+documents:
+  - from: AgenticWorkflow/AGENTS.md
+    id: AGENTS-AGENTIC-ROOT-001
+    type: agent-instructions
+    status: active
+    accepted: 2026-07-16
+  - from: AgenticWorkflow/ROADMAP.md
+    id: TRACKER-AGENTIC-ROADMAP-001
+    type: tracker
+    status: active

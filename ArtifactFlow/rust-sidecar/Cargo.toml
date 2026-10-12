@@ -1,0 +1,13 @@
+[package]
+name = "rust-sidecar"
+version = "0.1.0"
+edition = "2024"
+# Never published. Declaring it is not bookkeeping: cargo-deny's
+# `private.ignore` keys off it, so without this the crate is checked as if
+# it were going to crates.io and reads as unlicensed.
+publish = false
+
+[dependencies]
+flatbuffers = "25.12.19"
+interprocess = "2.4.2"
+rand = "0.10.1"

@@ -1,0 +1,15 @@
+name: hello-world
+
+nodes:
+  - id: write_poem
+    processor: llm.generate
+    config:
+      model: local-lm
+      prompt: "Write a two line poem about a workflow engine."
+
+  - id: export_poem
+    processor: export.markdown
+    depends_on: [write_poem]
+    inputs: [write_poem]
+    config:
+      filename: hello_poem.md

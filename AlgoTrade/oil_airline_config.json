@@ -1,0 +1,12 @@
+{
+  "experiment_id": "EXP-OIL-AIRLINE-001",
+  "description": "Crude Oil (CL=F) vs American Airlines (AAL) Lead-Lag Analysis",
+  "strategy_type": "LaggedCrossCorrelation",
+  "ticker_a": "AAL",
+  "ticker_b": "CL=F",
+  "macro_ticker": "SPY",
+  "rolling_window_hours": 60,
+  "step_size": 5,
+  "max_lag_tested": 10,
+  "volatility_threshold": 0.05
+}

@@ -1,0 +1,60 @@
+# Agent Instructions for ArtifactFlow
+
+ArtifactFlow is the core workflow and state platform for downstream applications in this workspace. Follow the workspace-level `AGENTS.md` and `SOFTWARE_ENGINEERING_PRINCIPLES.md`, then apply these ArtifactFlow-specific rules for files under this directory.
+
+## Architectural Boundaries
+
+- ArtifactFlow is domain-agnostic. Do not put downstream product logic into core packages.
+- ArtifactFlow owns DAG execution, interactive routing, blackboard persistence, capability discovery, sidecar lifecycle, IPC communication, model/tool runtime integration, and SQLite state persistence.
+- Domain-specific work belongs in downstream applications implementing the `Processor` interface.
+- Downstream applications must request capabilities through ArtifactFlow APIs. They should not start or stop ArtifactFlow sidecars directly.
+- Downstream applications may read capability status snapshots for UI/API health reporting, but status inspection must not become lifecycle ownership.
+
+## Sidecar And Backend Rules
+
+If you add or modify a sidecar or model backend:
+
+- For C++ CLI tools, use `exec.CommandContext`, set `cmd.Dir` to the executable directory, and pass absolute paths to local model files and input/output files.
+- For Python ML sidecars on Windows/AMD, prefer safetensors and avoid legacy pickle-backed `.bin`/`.pt` loading.
+- For Rust IPC sidecars, keep Go and Rust JSON payload structs in sync and pay attention to Windows named pipe formatting.
+- Start sidecars lazily from declared capabilities. Do not start Rust, Python, C++, or llama.cpp helpers unless a processor needs them.
+- Poll health endpoints, wait for IPC socket availability, or verify CLI readiness before running dependent processors.
+
+## DAG And Blackboard Rules
+
+- Treat published artifacts as immutable. Downstream nodes must read existing artifacts and emit new ones rather than mutating records in place.
+- `Engine.Run` keeps the compatible sequential DAG execution path.
+- `Engine.RunInteractive` lets processors return `metadata.next_node`; ArtifactFlow validates that handoff against the DAG before routing.
+- Processors can pause a run by returning an error that implements `Paused() bool`; ArtifactFlow records the node and run as `paused`.
+- `Engine.ResumeInteractive` resumes only paused interactive runs and uses the paused node as the cursor when no explicit node is supplied. It can reload persisted workflow cursor metadata when the caller no longer has the original workflow in memory.
+- The blackboard stores runs, interactive workflow cursors, node status, artifacts, messages, events, lessons, vectors, and config.
+- Local SQLite files are development state. Delete the relevant ignored database before retesting processor changes that may otherwise reuse cached artifacts.
+
+## Local Runtime Boundaries
+
+- Keep model files under `models/`; they are local runtime inputs and must not be committed.
+- Keep external source/build trees under `bin/`; they are ignored local dependencies.
+- Keep smoke logs under the project `logs/` directory. Do not write ad hoc project logs to system temp directories.
+- The local ignored `bin/go.mod` file is allowed as a Go workspace boundary so `go test ./...` does not traverse external tool checkouts.
+
+## Repository Documentation
+
+Before starting any design or programming task in this repository, agents **MUST** inspect the documentation tree in [docs/](docs/README.md), organised per the workspace standard `EOM repository-documentation-architecture-tdd` — subject first, document type second:
+
+- `docs/design/<subject>/TDD.md` — blackboard, dag-engine, ipc, capability-manager, framework, state, workflow, python-sidecar, rust-sidecar.
+- `docs/reference/runtimes/` — GGUF/llama.cpp context configs, Ollama integration, safetensors policy.
+- `docs/reference/integrations/` — VideoScriptor and CodingAgentsGO.
+- `docs/archive/okf-bundle-log.md` — the retired bundle's update ledger.
+
+Consulting these helps agents maintain strict scope boundaries, respect architectural interfaces, and blend seamlessly with existing patterns.
+
+**Maintain Parity**: Any modifications to codebase features, APIs, persistent schemas, runtimes, configurations, or integrations MUST be documented by updating the corresponding document under `docs/` in the same commit. Parity between the active implementation and the documentation must be maintained at all times.
+
+This tree replaced an `okf/` bundle when project OKF bundles were retired under the workspace ADR-0003.
+
+## Validation
+
+```powershell
+go test ./...
+go build ./...
+```

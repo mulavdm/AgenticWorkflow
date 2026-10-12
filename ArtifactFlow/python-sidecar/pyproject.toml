@@ -1,0 +1,16 @@
+[project]
+name = "artifactflow-python-sidecar"
+version = "0.1.0"
+description = "Hardware-aware Python sidecar for ArtifactFlow orchestration"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "torch",
+    "torch-directml",
+    "transformers",
+    "accelerate",
+    "pillow",
+    "sentencepiece",
+    "protobuf"
+]

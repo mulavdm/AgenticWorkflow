@@ -1,0 +1,1 @@
+Audit the plan and execution for security vulnerabilities. If coding/implementation is still needed, end turn with [NEXT: coder]. If the implementation is fully complete and verified, end turn with [NEXT: synthesizer].

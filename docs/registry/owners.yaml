@@ -1,0 +1,5 @@
+# Stewardship keys of the AgenticWorkflow container's identity scope. Every
+# key resolves to the owner as the accountable human.
+owners:
+  - id: agentic-workflow
+    scope: The AgenticWorkflow container and its shared documents

@@ -1,0 +1,28 @@
+# Binaries
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Dependency directories (remove rates if not using vendor)
+vendor/
+
+# Database files
+*.db
+
+# Data files (often large)
+data/*.csv
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo

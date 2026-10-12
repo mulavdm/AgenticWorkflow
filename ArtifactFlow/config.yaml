@@ -1,0 +1,17 @@
+# ArtifactFlow Configuration
+
+ipc:
+  # Named Pipe for Windows, use Unix Domain Sockets for Linux/macOS
+  pipe_name: "\\\\.\\pipe\\artifactflow_ipc"
+
+state:
+  # Path to the SQLite database
+  db_path: "./blackboard.db"
+
+provider:
+  # Set to "lmstudio", "ollama", or "cloud"
+  default: "lmstudio"
+  lmstudio_endpoint: "http://localhost:1234/v1"
+  ollama_endpoint: "http://localhost:11434/api"
+  cloud_endpoint: "https://api.openai.com/v1"
+  cloud_api_key: "${OPENAI_API_KEY}" # Loaded from env

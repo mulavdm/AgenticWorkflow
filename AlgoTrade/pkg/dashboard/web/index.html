@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantitative Lead-Lag Research Lab</title>
+    <!-- Google Fonts Inter & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --active-neon: #10b981;
+            --alert-red: #f43f5e;
+            --warning-gold: #f59e0b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --font-display: 'Outfit', 'Inter', sans-serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.05) 0%, transparent 40%),
+                              radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.03) 0%, transparent 45%);
+            background-attachment: fixed;
+        }
+
+        header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--card-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(8px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background-color: rgba(15, 23, 42, 0.8);
+        }
+
+        .logo-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 2.2rem;
+            height: 2.2rem;
+            background: linear-gradient(135deg, var(--primary), var(--active-neon));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+        }
+
+        h1 {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        .header-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            background-color: rgba(30, 41, 59, 0.5);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            border: 1px solid var(--card-border);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--active-neon);
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 8px var(--active-neon);
+        }
+
+        .main-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 2rem;
+        }
+
+        /* Sidebar: Experiment Selection */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .card-title {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .experiment-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 0.25rem;
+        }
+
+        .experiment-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        .experiment-list::-webkit-scrollbar-thumb {
+            background-color: var(--card-border);
+            border-radius: 4px;
+        }
+
+        .experiment-item {
+            padding: 0.85rem;
+            background-color: rgba(15, 23, 42, 0.4);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .experiment-item:hover, .experiment-item.active {
+            background-color: rgba(99, 102, 241, 0.1);
+            border-color: var(--primary);
+        }
+
+        .experiment-item .exp-id {
+            font-family: var(--font-display);
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .experiment-item .exp-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.3;
+        }
+
+        /* Content Area */
+        .content {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .stat-card {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .stat-card .label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        .stat-card .value {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-main);
+            background: linear-gradient(135deg, #fff, var(--text-muted));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-card .value.active {
+            background: linear-gradient(135deg, var(--active-neon), #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-card .desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Chart Canvas Wrappers */
+        .chart-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .two-column-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 1100px) {
+            .two-column-row {
+                grid-template-columns: 1fr;
+            }
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chart-container {
+            position: relative;
+            height: 380px;
+            width: 100%;
+        }
+
+        /* Custom Interactive Indicators */
+        .no-data-msg {
+            color: var(--text-muted);
+            text-align: center;
+            padding: 3rem 1rem;
+            font-size: 0.95rem;
+        }
+
+        /* Discovery Lab Table Styling */
+        table th, table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--card-border);
+        }
+        table tbody tr {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        table tbody tr:hover {
+            background-color: rgba(99, 102, 241, 0.06);
+        }
+        .survival-badge {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--active-neon);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        .survival-badge.high {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        .survival-badge.mid {
+            background-color: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-group">
+            <div class="logo-icon">Λ</div>
+            <div>
+                <h1>AlgoTrade Research Station</h1>
+            </div>
+        </div>
+        <div class="header-status">
+            <span class="status-dot"></span>
+            <span>Local Engine Connected</span>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="card" style="flex: 1;">
+                <div class="card-title">
+                    <span>Experiment Ledger</span>
+                    <span style="font-size: 0.8rem; color: var(--primary);">History</span>
+                </div>
+                <ul class="experiment-list" id="experiment-list">
+                    <!-- Loaded dynamically -->
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="content">
+            <!-- Active Experiment Metadata -->
+            <div class="card" id="meta-card">
+                <h2 style="font-family: var(--font-display); font-size: 1.2rem; margin-bottom: 0.5rem;" id="active-exp-title">No Experiment Selected</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem;" id="active-exp-desc">Please select an experiment from the ledger side-panel to view research metrics.</p>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="card stat-card">
+                    <span class="label">Primary Asset Pairs</span>
+                    <span class="value" id="stat-pairs">-</span>
+                    <span class="desc">Lead-lag correlation targets</span>
+                </div>
+                <div class="card stat-card">
+                    <span class="label">Macro Variable</span>
+                    <span class="value" id="stat-macro">-</span>
+                    <span class="desc">Second-order correlation indicator</span>
+                </div>
+                <div class="card stat-card">
+                    <span class="label">Macro Correlation</span>
+                    <span class="value active" id="stat-correlation">-</span>
+                    <span class="desc">Pearson coeff of Sweet Spot vs Macro</span>
+                </div>
+                <div class="card stat-card">
+                    <span class="label">Dataset Points</span>
+                    <span class="value" id="stat-points">-</span>
+                    <span class="desc">Aligned timeline intervals</span>
+                </div>
+                <div class="card stat-card">
+                    <span class="label">Falsification Rate</span>
+                    <span class="value" id="stat-falsified" style="background: linear-gradient(135deg, var(--warning-gold), var(--alert-red)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">-</span>
+                    <span class="desc">Insignificant windows / Multiple tests</span>
+                </div>
+            </div>
+
+            <!-- Main Dynamic Sweet Spot Timeline -->
+            <div class="card">
+                <div class="card-title">
+                    <span>Dynamic Sweet Spot & Volatility Timeline</span>
+                    <span style="font-size: 0.75rem; color: var(--text-muted);">Hover points to inspect local Cross-Correlation</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="timeline-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- Popperian Discovery Lab -->
+            <div class="card" id="discovery-lab-card" style="display: none;">
+                <div class="card-title">
+                    <span>🔬 Popperian Discovery Lab — Validated Market Edges</span>
+                    <span style="font-size: 0.75rem; color: var(--active-neon);">Surviving Bonferroni Significance Checks (&ge;20%)</span>
+                </div>
+                <div style="overflow-x: auto; margin-top: 1rem; max-height: 250px;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--card-border); color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                <th style="padding: 0.6rem 0.75rem;">Follower (Asset A)</th>
+                                <th style="padding: 0.6rem 0.75rem;">Leader (Asset B)</th>
+                                <th style="padding: 0.6rem 0.75rem;">Macro Indicator</th>
+                                <th style="padding: 0.6rem 0.75rem; text-align: center;">Dominant Lag</th>
+                                <th style="padding: 0.6rem 0.75rem; text-align: center;">Avg Correlation</th>
+                                <th style="padding: 0.6rem 0.75rem; text-align: center;">Survival Rate</th>
+                                <th style="padding: 0.6rem 0.75rem; text-align: right;">Discovery Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="edges-table-body">
+                            <!-- Discovered edges inserted dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Two Column Row: Local CCF and Spread Scatter -->
+            <div class="two-column-row">
+                <div class="card">
+                    <div class="card-title">
+                        <span>Cross-Correlation Function (CCF) Profile</span>
+                        <span style="font-size: 0.75rem; color: var(--active-neon);" id="ccf-timestamp">Current Snapshot</span>
+                    </div>
+                    <div class="chart-container" style="height: 280px;">
+                        <canvas id="ccf-chart"></canvas>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">
+                        <span>Optimal Lag Distribution</span>
+                        <span style="font-size: 0.75rem; color: var(--text-muted);">Frequencies</span>
+                    </div>
+                    <div class="chart-container" style="height: 280px;">
+                        <canvas id="distribution-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Frontend Script -->
+    <script src="app.js"></script>
+</body>
+</html>

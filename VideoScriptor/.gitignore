@@ -1,0 +1,13 @@
+# Generated media and runtime state
+output/
+*.log
+*.db
+*.db-shm
+*.db-wal
+
+# Local build products and configuration
+bin/
+*.exe
+.env
+.env.*
+

@@ -1,0 +1,8 @@
+name: generate-image-e2e
+nodes:
+  - id: generate_e2e
+    processor: gen.generate_image
+    config:
+      repo_name: "Tongyi-MAI/Z-Image-Turbo"
+      prompt: "A cinematic shot of a futuristic neon city, high quality, highly detailed"
+      steps: 20

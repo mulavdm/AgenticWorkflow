@@ -1,0 +1,38 @@
+// schema/workflow.fbs
+namespace artifactflow;
+
+// Replicates the Go internal/artifact.Artifact struct structure
+table ArtifactSchema {
+  id: string;
+  kind: string;
+  uri: string;
+}
+
+// Request sent from Go Orchestrator -> Rust Sidecar to process a workflow node
+table NodeExecutionRequest {
+  run_id: string;
+  node_id: string;
+  processor_name: string;
+  config_json: string;
+  inputs: [ArtifactSchema];
+}
+
+// Response sent from Rust Sidecar -> Go Orchestrator
+table NodeExecutionResponse {
+  success: bool;
+  error_message: string;
+  outputs: [ArtifactSchema];
+}
+
+// Wrapping union for generic messages
+union IPCMessagePayload {
+  NodeExecutionRequest,
+  NodeExecutionResponse
+}
+
+table IPCMessage {
+  id: string; // Used to correlate requests and responses
+  payload: IPCMessagePayload;
+}
+
+root_type IPCMessage;

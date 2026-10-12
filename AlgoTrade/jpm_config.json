@@ -1,0 +1,12 @@
+{
+  "experiment_id": "EXP-JPM-001",
+  "description": "JPM vs Broader Financial Sector (XLF) Lead-Lag Analysis",
+  "strategy_type": "LaggedCrossCorrelation",
+  "ticker_a": "JPM",
+  "ticker_b": "XLF",
+  "macro_ticker": "SPY",
+  "rolling_window_hours": 60,
+  "step_size": 5,
+  "max_lag_tested": 10,
+  "volatility_threshold": 0.05
+}

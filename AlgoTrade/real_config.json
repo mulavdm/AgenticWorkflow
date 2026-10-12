@@ -1,0 +1,12 @@
+{
+  "experiment_id": "EXP-REAL-001",
+  "description": "Yield Shift (TLT) vs AAPL-MSFT Lead-Lag Relationship",
+  "strategy_type": "LaggedCrossCorrelation",
+  "ticker_a": "AAPL",
+  "ticker_b": "MSFT",
+  "macro_ticker": "TLT",
+  "rolling_window_hours": 60,
+  "step_size": 5,
+  "max_lag_tested": 10,
+  "volatility_threshold": 0.05
+}
